@@ -119,7 +119,7 @@ sub assert_is($$;$) {
     return if $string eq $match;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_isnt( $string, $unmatch [,$name] )
@@ -139,7 +139,7 @@ sub assert_isnt($$;$) {
     return if defined($string) && defined($unmatch) && ($string ne $unmatch);
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_like( $string, qr/regex/ [,$name] )
@@ -160,7 +160,7 @@ sub assert_like($$;$) {
     return if $string =~ $regex;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_unlike( $string, qr/regex/ [,$name] )
@@ -183,7 +183,7 @@ sub assert_unlike($$;$) {
     return if $string !~ $regex;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_defined( $this [, $name] )
@@ -196,7 +196,7 @@ sub assert_defined($;$) {
     return if defined( $_[0] );
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($_[1]) );
+    &Carp::confess( _fail_msg($_[1]) );
 }
 
 =head2 assert_undefined( $this [, $name] )
@@ -209,7 +209,7 @@ sub assert_undefined($;$) {
     return unless defined( $_[0] );
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($_[1]) );
+    &Carp::confess( _fail_msg($_[1]) );
 }
 
 =head2 assert_nonblank( $this [, $name] )
@@ -226,7 +226,7 @@ sub assert_nonblank($;$) {
     return if $this ne "";
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 
@@ -269,7 +269,7 @@ sub assert_integer($;$) {
     return if $this =~ /^-?\d+$/;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_nonzero( $this [, $name ] )
@@ -292,7 +292,7 @@ sub assert_nonzero($;$) {
     return if $this+0 != 0;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_positive( $this [, $name ] )
@@ -313,7 +313,7 @@ sub assert_positive($;$) {
     return if $this+0 > 0;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_nonnegative( $this [, $name ] )
@@ -337,7 +337,7 @@ sub assert_nonnegative($;$) {
     return if $this+0 >= 0;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_negative( $this [, $name ] )
@@ -358,7 +358,7 @@ sub assert_negative($;$) {
     return if $this+0 < 0;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_nonzero_integer( $this [, $name ] )
@@ -463,7 +463,7 @@ sub assert_isa($$;$) {
     return if ref($this) eq $type;
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 
@@ -591,7 +591,7 @@ sub assert_nonref($;$) {
     return unless ref( $this );
 
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_hashref( $ref [,$name] )
@@ -762,7 +762,7 @@ sub assert_in($$;$) {
         return if $string eq $element;
     }
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($name) );
+    &Carp::confess( _fail_msg($name) );
 }
 
 =head2 assert_exists( \%hash, $key [,$name] )
@@ -790,7 +790,7 @@ sub assert_exists($$;$) {
     for ( @list ) {
         if ( !exists( $hash->{$_} ) ) {
             require Carp;
-            &Carp::confess( Carp::Assert::_fail_msg($name) );
+            &Carp::confess( _fail_msg($name) );
         }
     }
 }
@@ -819,7 +819,7 @@ sub assert_lacks($$;$) {
     for ( @list ) {
         if ( exists( $hash->{$_} ) ) {
             require Carp;
-            &Carp::confess( Carp::Assert::_fail_msg($name) );
+            &Carp::confess( _fail_msg($name) );
         }
     }
 }
@@ -887,7 +887,7 @@ accidentally use C<assert($msg)>, which of course never fires.
 
 sub assert_fail(;$) {
     require Carp;
-    &Carp::confess( Carp::Assert::_fail_msg($_[0]) );
+    &Carp::confess( _fail_msg($_[0]) );
 }
 
 
@@ -896,6 +896,16 @@ sub _any(&;@) {
     my $sub = shift;
     $sub->($_) && return 1 for @_;
     return 0;
+}
+
+
+# Can't call confess() here or the stack trace will be wrong.
+sub _fail_msg {
+    my($name) = shift;
+    my $msg = 'Assertion';
+    $msg   .= " ($name)" if defined $name;
+    $msg   .= " failed!\n";
+    return $msg;
 }
 
 
