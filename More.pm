@@ -178,10 +178,8 @@ sub assert_unlike($$;$) {
 
     return if !defined($string);
 
-    if ( !ref($string) ) {
-        if ( ref($regex) ) {
-            return if $string !~ $regex;
-        }
+    if ( ref($regex) eq 'Regexp' ) {
+        return if $string !~ $regex;
     }
 
     require Carp;
