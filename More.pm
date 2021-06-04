@@ -15,12 +15,12 @@ Carp::Assert::More - convenience wrappers around Carp::Assert
 
 =head1 VERSION
 
-Version 1.26
+Version 2.0.0
 
 =cut
 
 BEGIN {
-    $VERSION = '1.26';
+    $VERSION = '2.0.0';
     @ISA = qw(Exporter);
     @EXPORT = qw(
         assert_all_keys_in
@@ -91,13 +91,6 @@ other than readability and simplicity of the code.
 My intent here is to make common assertions easy so that we as programmers
 have no excuse to not use them.
 
-=head1 CAVEATS
-
-I haven't specifically done anything to make Carp::Assert::More be
-backwards compatible with anything besides Perl 5.6.1, much less back
-to 5.004.  Perhaps someone with better testing resources in that area
-can help me out here.
-
 =head1 SIMPLE ASSERTIONS
 
 =head2 assert_is( $string, $match [,$name] )
@@ -122,6 +115,7 @@ sub assert_is($$;$) {
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_isnt( $string, $unmatch [,$name] )
 
 Asserts that I<$string> does NOT match I<$unmatch>.
@@ -142,6 +136,7 @@ sub assert_isnt($$;$) {
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_like( $string, qr/regex/ [,$name] )
 
 Asserts that I<$string> matches I<qr/regex/>.
@@ -155,13 +150,16 @@ sub assert_like($$;$) {
     my $regex = shift;
     my $name = shift;
 
-    assert_nonref( $string, $name );
-    assert_isa( $regex, 'Regexp', $name );
-    return if $string =~ $regex;
+    if ( defined($string) && !ref($string) ) {
+        if ( ref($regex) ) {
+            return if $string =~ $regex;
+        }
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_unlike( $string, qr/regex/ [,$name] )
 
@@ -178,13 +176,16 @@ sub assert_unlike($$;$) {
 
     return if !defined($string);
 
-    assert_nonref( $string, $name );
-    assert_isa( $regex, 'Regexp', $name );
-    return if $string !~ $regex;
+    if ( !ref($string) ) {
+        if ( ref($regex) ) {
+            return if $string !~ $regex;
+        }
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_defined( $this [, $name] )
 
@@ -198,6 +199,7 @@ sub assert_defined($;$) {
     require Carp;
     &Carp::confess( _fail_msg($_[1]) );
 }
+
 
 =head2 assert_undefined( $this [, $name] )
 
@@ -214,7 +216,7 @@ sub assert_undefined($;$) {
 
 =head2 assert_nonblank( $this [, $name] )
 
-Asserts that I<$this> is not blank and not a reference.
+Asserts that I<$this> is not a reference and is not an empty string.
 
 =cut
 
@@ -222,8 +224,9 @@ sub assert_nonblank($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_nonref( $this, $name );
-    return if $this ne "";
+    if ( defined($this) && !ref($this) ) {
+        return if $this ne '';
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
@@ -235,6 +238,7 @@ sub assert_nonblank($;$) {
 =head2 assert_numeric( $n [, $name] )
 
 Asserts that C<$n> looks like a number, according to C<Scalar::Util::looks_like_number>.
+C<undef> will always fail.
 
 =cut
 
@@ -265,22 +269,22 @@ sub assert_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_nonref( $this, $name );
-    return if $this =~ /^-?\d+$/;
+    if ( defined($this) && !ref($this) ) {
+        return if $this =~ /^-?\d+$/;
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_nonzero( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is not zero.
+Asserts that the numeric value of I<$this> is defined and is not zero.
 
     assert_nonzero( 0 );    # FAIL
     assert_nonzero( -14 );  # pass
     assert_nonzero( '14.' );  # pass
-
-Asserts that the numeric value of I<$this> is not zero.
 
 =cut
 
@@ -289,11 +293,12 @@ sub assert_nonzero($;$) {
     my $name = shift;
 
     no warnings;
-    return if $this+0 != 0;
+    return if defined($this) && ($this+0 != 0);
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_positive( $this [, $name ] )
 
@@ -310,11 +315,12 @@ sub assert_positive($;$) {
     my $name = shift;
 
     no warnings;
-    return if $this+0 > 0;
+    return if defined($this) && ($this+0 > 0);
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_nonnegative( $this [, $name ] )
 

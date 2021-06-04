@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Carp::Assert::More;
 
@@ -13,6 +13,7 @@ use constant PASS => 1;
 use constant FAIL => 2;
 
 my @cases = (
+    [ undef,    FAIL ],
     [ 5,        PASS ],
     [ 0,        PASS ],
     [ 0.4,      FAIL ],
@@ -24,7 +25,7 @@ my @cases = (
 for my $case ( @cases ) {
     my ($val,$status) = @$case;
 
-    my $desc = "Checking \"$val\"";
+    my $desc = 'Checking ' . ($val // 'undef');
     eval { assert_integer( $val ) };
 
     if ( $status eq FAIL ) {
