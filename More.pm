@@ -62,6 +62,8 @@ BEGIN {
     );
 }
 
+my $INTEGER = qr/^-?\d+$/;
+
 =head1 SYNOPSIS
 
 A set of convenience functions for common assertions.
@@ -269,8 +271,8 @@ sub assert_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    if ( defined($this) && !ref($this) ) {
-        return if $this =~ /^-?\d+$/;
+    if ( defined($this) ) {
+        return if $this =~ $INTEGER;
     }
 
     require Carp;
@@ -324,9 +326,8 @@ sub assert_positive($;$) {
 
 =head2 assert_nonnegative( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is greater than or equal
-to zero.  Since non-numeric strings evaluate to zero, this means that
-any non-numeric string will pass.
+Asserts that I<$this> is defined, numeric and greater than or equal
+to zero.
 
     assert_nonnegative( 0 );      # pass
     assert_nonnegative( -14 );    # FAIL
@@ -339,16 +340,19 @@ sub assert_nonnegative($;$) {
     my $this = shift;
     my $name = shift;
 
-    no warnings;
-    return if $this+0 >= 0;
+    require Scalar::Util;
+    if ( Scalar::Util::looks_like_number( $this ) ) {
+        return if $this >= 0;
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_negative( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is less than zero.
+Asserts that the numeric value of I<$this> is defined and less than zero.
 
     assert_negative( 0 );       # FAIL
     assert_negative( -14 );     # pass
@@ -361,16 +365,16 @@ sub assert_negative($;$) {
     my $name = shift;
 
     no warnings;
-    return if $this+0 < 0;
+    return if defined($this) && ($this+0 < 0);
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_nonzero_integer( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is not zero, and that I<$this>
-is an integer.
+Asserts that the numeric value of I<$this> is defined, an integer, and not zero.
 
     assert_nonzero_integer( 0 );      # FAIL
     assert_nonzero_integer( -14 );    # pass
@@ -382,14 +386,18 @@ sub assert_nonzero_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_nonzero( $this, $name );
-    assert_integer( $this, $name );
+    if ( defined($this) && ($this =~ $INTEGER) ) {
+        return if $this != 0;
+    }
+
+    require Carp;
+    &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_positive_integer( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is greater than zero, and
-that I<$this> is an integer.
+Asserts that the numeric value of I<$this> is defined, an integer and greater than zero.
 
     assert_positive_integer( 0 );     # FAIL
     assert_positive_integer( -14 );   # FAIL
@@ -402,14 +410,18 @@ sub assert_positive_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_positive( $this, $name );
-    assert_integer( $this, $name );
+    if ( defined($this) && ($this =~ $INTEGER) ) {
+        return if $this > 0;
+    }
+
+    require Carp;
+    &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_nonnegative_integer( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is not less than zero, and
-that I<$this> is an integer.
+Asserts that the numeric value of I<$this> is defined, an integer, and not less than zero.
 
     assert_nonnegative_integer( 0 );      # pass
     assert_nonnegative_integer( -14 );    # pass
@@ -421,14 +433,18 @@ sub assert_nonnegative_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_nonnegative( $this, $name );
-    assert_integer( $this, $name );
+    if ( defined($this) && ($this =~ $INTEGER) ) {
+        return if $this >= 0;
+    }
+
+    require Carp;
+    &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_negative_integer( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is less than zero, and that
-I<$this> is an integer.
+Asserts that the numeric value of I<$this> is defined, an integer, and less than zero.
 
     assert_negative_integer( 0 );      # FAIL
     assert_negative_integer( -14 );    # pass
@@ -440,9 +456,14 @@ sub assert_negative_integer($;$) {
     my $this = shift;
     my $name = shift;
 
-    assert_negative( $this, $name );
-    assert_integer( $this, $name );
+    if ( defined($this) && ($this =~ $INTEGER) ) {
+        return if $this < 0;
+    }
+
+    require Carp;
+    &Carp::confess( _fail_msg($name) );
 }
+
 
 =head1 REFERENCE ASSERTIONS
 
