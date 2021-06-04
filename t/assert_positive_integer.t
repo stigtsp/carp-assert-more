@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 use Carp::Assert::More;
 
@@ -13,6 +13,8 @@ use constant PASS => 1;
 use constant FAIL => 2;
 
 my @cases = (
+    [ undef,    FAIL ],
+    [ '',       FAIL ],
     [ 5,        PASS ],
     [ 0,        FAIL ],
     [ 0.4,      FAIL ],
@@ -25,8 +27,7 @@ my @cases = (
 for my $case ( @cases ) {
     my ($val,$status) = @{$case};
 
-    my $desc = "Checking \"$val\"";
-
+    my $desc = 'Checking ' . ($val // 'undef');
     if ( $status eq FAIL ) {
         throws_ok( sub { assert_positive_integer( $val ) }, qr/Assertion failed/, $desc );
     }
@@ -35,5 +36,4 @@ for my $case ( @cases ) {
     }
 }
 
-done_testing();
 exit 0;
