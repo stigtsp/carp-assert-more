@@ -4,7 +4,10 @@ Revision history for Perl extension Carp::Assert::More.
 2.0.0
         Now requires Perl 5.10 or higher.
 
-        assert_nonnegative($x) would pass if $x was a non-numeric string. Now it must be numeric.
+        The numeric functions are more stringent now.  If it expects
+        a number, then you need to pass a number.  For example,
+        assert_nonnegative($x) would pass if $x was a non-numeric
+        string. Now it must be numeric.
 
 
 1.26    Sat Dec 26 00:26:23 CST 2020

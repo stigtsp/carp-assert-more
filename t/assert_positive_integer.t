@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use Carp::Assert::More;
 
@@ -15,6 +15,8 @@ use constant FAIL => 2;
 my @cases = (
     [ undef,    FAIL ],
     [ '',       FAIL ],
+    [ [],       FAIL ],
+    [ {},       FAIL ],
     [ 5,        PASS ],
     [ 0,        FAIL ],
     [ 0.4,      FAIL ],

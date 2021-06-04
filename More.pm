@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Exporter;
 use Carp::Assert;
+use Scalar::Util;
 
 use vars qw( $VERSION @ISA @EXPORT );
 
@@ -246,8 +247,6 @@ sub assert_numeric {
     my $n    = shift;
     my $name = shift;
 
-    require Scalar::Util;
-
     assert( Scalar::Util::looks_like_number( $n ), $name );
 
     return;
@@ -292,8 +291,9 @@ sub assert_nonzero($;$) {
     my $this = shift;
     my $name = shift;
 
-    no warnings;
-    return if defined($this) && ($this+0 != 0);
+    if ( Scalar::Util::looks_like_number($this) ) {
+        return if $this != 0;
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
@@ -302,7 +302,7 @@ sub assert_nonzero($;$) {
 
 =head2 assert_positive( $this [, $name ] )
 
-Asserts that the numeric value of I<$this> is greater than zero.
+Asserts that I<$this> is defined, numeric and greater than zero.
 
     assert_positive( 0 );    # FAIL
     assert_positive( -14 );  # FAIL
@@ -314,8 +314,9 @@ sub assert_positive($;$) {
     my $this = shift;
     my $name = shift;
 
-    no warnings;
-    return if defined($this) && ($this+0 > 0);
+    if ( Scalar::Util::looks_like_number($this) ) {
+        return if ($this+0 > 0);
+    }
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
@@ -338,7 +339,6 @@ sub assert_nonnegative($;$) {
     my $this = shift;
     my $name = shift;
 
-    require Scalar::Util;
     if ( Scalar::Util::looks_like_number( $this ) ) {
         return if $this >= 0;
     }
@@ -482,8 +482,6 @@ sub assert_isa($$;$) {
     # 1) For objects, $this is of class $type or of a subclass of $type
     # 2) For non-objects, $this is a reference to a HASH, SCALAR, ARRAY, etc.
 
-    require Scalar::Util;
-
     return if Scalar::Util::blessed( $this ) && $this->isa( $type );
     return if ref($this) eq $type;
 
@@ -504,8 +502,6 @@ sub assert_isa_in($$;$) {
     my $obj   = shift;
     my $types = shift;
     my $name  = shift;
-
-    require Scalar::Util;
 
     my $ok = _any { Scalar::Util::blessed($obj) && $obj->isa($_) } @{$types};
     assert( $ok, $name );
@@ -536,8 +532,6 @@ an array ref) may not be what you want.
 sub assert_empty($;$) {
     my $ref = shift;
     my $name = shift;
-
-    require Scalar::Util;
 
     my $underlying_type;
     if ( Scalar::Util::blessed( $ref ) ) {
@@ -580,8 +574,6 @@ ref) may not be what you want.
 sub assert_nonempty($;$) {
     my $ref = shift;
     my $name = shift;
-
-    require Scalar::Util;
 
     my $underlying_type;
     if ( Scalar::Util::blessed( $ref ) ) {
