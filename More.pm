@@ -109,10 +109,8 @@ sub assert_is($$;$) {
 
     # undef only matches undef
     return if !defined($string) && !defined($match);
-    assert_defined( $string, $name );
-    assert_defined( $match, $name );
 
-    return if $string eq $match;
+    return if defined($string) && defined($match) && ($string eq $match);
 
     require Carp;
     &Carp::confess( _fail_msg($name) );
