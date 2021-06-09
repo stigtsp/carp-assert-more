@@ -474,8 +474,6 @@ sub assert_isa($$;$) {
     my $type = shift;
     my $name = shift;
 
-    assert_defined( $this, $name );
-
     # The assertion is true if
     # 1) For objects, $this is of class $type or of a subclass of $type
     # 2) For non-objects, $this is a reference to a HASH, SCALAR, ARRAY, etc.
