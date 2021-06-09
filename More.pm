@@ -548,6 +548,7 @@ sub assert_empty($;$) {
     &Carp::confess( _fail_msg($name) );
 }
 
+
 =head2 assert_nonempty( $this [, $name ] )
 
 I<$this> must be a ref to either a hash or an array.  Asserts that that
@@ -580,15 +581,16 @@ sub assert_nonempty($;$) {
     }
 
     if ( $underlying_type eq 'HASH' ) {
-        assert_positive( scalar keys %{$ref}, $name );
+        return if scalar keys %{$ref} > 0;
     }
     elsif ( $underlying_type eq 'ARRAY' ) {
-        assert_positive( scalar @{$ref}, $name );
+        return if scalar @{$ref} > 0;
     }
-    else {
-        assert_fail( 'Not an array or hash reference' );
-    }
+
+    require Carp;
+    &Carp::confess( _fail_msg($name) );
 }
+
 
 =head2 assert_nonref( $this [, $name ] )
 
