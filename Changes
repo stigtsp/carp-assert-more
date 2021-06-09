@@ -2,12 +2,17 @@ Revision history for Perl extension Carp::Assert::More.
 
 
 2.0.0
+        [DIFFERENCES]
         Now requires Perl 5.10 or higher.
 
         The numeric functions are more stringent now.  If it expects
         a number, then you need to pass a number.  For example,
         assert_nonnegative($x) would pass if $x was a non-numeric
         string. Now it must be numeric.
+
+        assert_empty() no longer gives a message of "Not an array or
+        hash reference".  If you don't pass an array or hash reference,
+        the assertion will just fail with the message passe3d in.
 
 
 1.26    Sat Dec 26 00:26:23 CST 2020
